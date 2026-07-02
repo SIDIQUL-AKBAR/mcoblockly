@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Browser Block Coding Platform</title>
+    <!-- Load Blockly Core Libraries via CDN -->
+    <script src="https://unpkg.com"></script>
+</head>
+<body style="margin: 0; display: flex; flex-direction: column; height: 100vh;">
+    
+    <div style="padding: 10px; background: #333; color: white;">
+        <button id="runButton" style="padding: 8px 16px; cursor: pointer;">▶ Run Code</button>
+    </div>
+
+    <div style="display: flex; flex: 1;">
+        <!-- Blockly Editor Workspace -->
+        <div id="blocklyDiv" style="width: 70%; height: 100%;"></div>
+        <!-- Output Code Preview Window -->
+        <div style="width: 30%; background: #f4f4f4; padding: 15px; box-sizing: border-box;">
+            <h3>Generated JavaScript:</h3>
+            <pre id="codePreview">// Your blocks will turn into code here</pre>
+        </div>
+    </div>
+
+    <!-- Define the available blocks toolbox -->
+    <xml id="toolbox" style="display: none">
+        <category name="Logic" colour="%{BKY_LOGIC_HUE}">
+            <block type="controls_if"></block>
+            <block type="logic_compare"></block>
+        </category>
+        <category name="Loops" colour="%{BKY_LOOPS_HUE}">
+            <block type="controls_repeat_ext"></block>
+        </category>
+        <category name="Text" colour="%{BKY_TEXT_HUE}">
+            <block type="text"></block>
+            <block type="text_print"></block>
+        </category>
+    </xml>
+
+    <script src="app.js"></script>
+</body>
+</html>
