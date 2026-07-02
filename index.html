@@ -2,27 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Browser Block Coding Platform</title>
-    <!-- Load Blockly Core Libraries via CDN -->
-    <script src="https://unpkg.com"></script>
+    <title>My Block Coding Platform</title>
+    <script src="https://unpkg.com/blockly/blockly.map.js"></script>
+    <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
+    <style>
+        body { margin: 0; font-family: sans-serif; }
+        #blocklyDiv { height: 90vh; width: 100vw; }
+        #toolbox { display: none; }
+    </style>
 </head>
-<body style="margin: 0; display: flex; flex-direction: column; height: 100vh;">
-    
-    <div style="padding: 10px; background: #333; color: white;">
-        <button id="runButton" style="padding: 8px 16px; cursor: pointer;">▶ Run Code</button>
-    </div>
+<body>
 
-    <div style="display: flex; flex: 1;">
-        <!-- Blockly Editor Workspace -->
-        <div id="blocklyDiv" style="width: 70%; height: 100%;"></div>
-        <!-- Output Code Preview Window -->
-        <div style="width: 30%; background: #f4f4f4; padding: 15px; box-sizing: border-box;">
-            <h3>Generated JavaScript:</h3>
-            <pre id="codePreview">// Your blocks will turn into code here</pre>
-        </div>
-    </div>
+    <h2 style="margin: 10px;">My Custom Block Platform</h2>
+    <div id="blocklyDiv"></div>
 
-    <!-- Define the available blocks toolbox -->
     <xml id="toolbox" style="display: none">
         <category name="Logic" colour="%{BKY_LOGIC_HUE}">
             <block type="controls_if"></block>
@@ -31,12 +26,19 @@
         <category name="Loops" colour="%{BKY_LOOPS_HUE}">
             <block type="controls_repeat_ext"></block>
         </category>
-        <category name="Text" colour="%{BKY_TEXT_HUE}">
-            <block type="text"></block>
-            <block type="text_print"></block>
+        <category name="Math" colour="%{BKY_MATH_HUE}">
+            <block type="math_number"></block>
+            <block type="math_arithmetic"></block>
         </category>
     </xml>
 
-    <script src="app.js"></script>
+    <script>
+        // Inject Blockly into the div
+        const workspace = Blockly.inject('blocklyDiv', {
+            toolbox: document.getElementById('toolbox'),
+            scrollbars: true,
+            trashcan: true
+        });
+    </script>
 </body>
 </html>
