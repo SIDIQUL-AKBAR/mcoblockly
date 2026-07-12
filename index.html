@@ -2,25 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My Block Coding Platform</title>
-  <!-- Load Blockly Core and Blocks via UNPKG CDN -->
+  <title>Custom Block Coding Platform</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Inject Blockly core and standard blocks -->
   <script src="https://unpkg.com"></script>
-  <style>
-    body { font-family: sans-serif; margin: 10px; }
-    #blocklyDiv { height: 480px; width: 600px; border: 1px solid #ccc; }
-    #codeArea { margin-top: 10px; width: 600px; height: 150px; }
-  </style>
+  <script src="https://unpkg.com"></script>
+  <script src="https://unpkg.com"></script>
 </head>
 <body>
-  <h1>Interactive Block Coding</h1>
-  
-  <!-- Visual canvas for dragging blocks -->
-  <div id="blocklyDiv"></div>
 
-  <!-- Area to output the compiled JavaScript code -->
-  <textarea id="codeArea" readonly placeholder="Your generated code will appear here..."></textarea>
+  <div id="ui-wrapper">
+    <!-- The block selector sidebar and canvas grid -->
+    <div id="blocklyDiv"></div>
+    
+    <!-- Real-time code preview and output execution -->
+    <div id="outputPanel">
+      <button id="runBtn">▶ Run Code</button>
+      <pre id="codePreview">// Generated JavaScript will appear here</pre>
+    </div>
+  </div>
 
-  <!-- Define standard toolbox choices -->
+  <!-- Define your toolbox (the sidebar choices) -->
   <xml id="toolbox" style="display: none">
     <category name="Logic" colour="%{BKY_LOGIC_HUE}">
       <block type="controls_if"></block>
@@ -33,21 +35,12 @@
       <block type="math_number"></block>
       <block type="math_arithmetic"></block>
     </category>
-    <category name="Variables" custom="VARIABLE" colour="%{BKY_VARIABLES_HUE}"></category>
+    <category name="Text" colour="%{BKY_TEXT_HUE}">
+      <block type="text"></block>
+      <block type="text_print"></block>
+    </category>
   </xml>
 
-  <script>
-    // Inject the visual Blockly workspace into the div
-    const workspace = Blockly.inject('blocklyDiv', {
-      toolbox: document.getElementById('toolbox')
-    });
-
-    // Real-time compilation listener
-    function updateCode() {
-      const code = Blockly.JavaScript.workspaceToCode(workspace);
-      document.getElementById('codeArea').value = code;
-    }
-    workspace.addChangeListener(updateCode);
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
