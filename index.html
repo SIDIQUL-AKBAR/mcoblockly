@@ -1,44 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>My Block Coding Platform</title>
-    <script src="https://unpkg.com/blockly/blockly.map.js"></script>
-    <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
-    <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
-    <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
-    <style>
-        body { margin: 0; font-family: sans-serif; }
-        #blocklyDiv { height: 90vh; width: 100vw; }
-        #toolbox { display: none; }
-    </style>
+  <meta charset="UTF-8">
+  <title>My Block Coding Platform</title>
+  <!-- Load Blockly Core and Blocks via UNPKG CDN -->
+  <script src="https://unpkg.com"></script>
+  <style>
+    body { font-family: sans-serif; margin: 10px; }
+    #blocklyDiv { height: 480px; width: 600px; border: 1px solid #ccc; }
+    #codeArea { margin-top: 10px; width: 600px; height: 150px; }
+  </style>
 </head>
 <body>
+  <h1>Interactive Block Coding</h1>
+  
+  <!-- Visual canvas for dragging blocks -->
+  <div id="blocklyDiv"></div>
 
-    <h2 style="margin: 10px;">My Custom Block Platform</h2>
-    <div id="blocklyDiv"></div>
+  <!-- Area to output the compiled JavaScript code -->
+  <textarea id="codeArea" readonly placeholder="Your generated code will appear here..."></textarea>
 
-    <xml id="toolbox" style="display: none">
-        <category name="Logic" colour="%{BKY_LOGIC_HUE}">
-            <block type="controls_if"></block>
-            <block type="logic_compare"></block>
-        </category>
-        <category name="Loops" colour="%{BKY_LOOPS_HUE}">
-            <block type="controls_repeat_ext"></block>
-        </category>
-        <category name="Math" colour="%{BKY_MATH_HUE}">
-            <block type="math_number"></block>
-            <block type="math_arithmetic"></block>
-        </category>
-    </xml>
+  <!-- Define standard toolbox choices -->
+  <xml id="toolbox" style="display: none">
+    <category name="Logic" colour="%{BKY_LOGIC_HUE}">
+      <block type="controls_if"></block>
+      <block type="logic_compare"></block>
+    </category>
+    <category name="Loops" colour="%{BKY_LOOPS_HUE}">
+      <block type="controls_repeat_ext"></block>
+    </category>
+    <category name="Math" colour="%{BKY_MATH_HUE}">
+      <block type="math_number"></block>
+      <block type="math_arithmetic"></block>
+    </category>
+    <category name="Variables" custom="VARIABLE" colour="%{BKY_VARIABLES_HUE}"></category>
+  </xml>
 
-    <script>
-        // Inject Blockly into the div
-        const workspace = Blockly.inject('blocklyDiv', {
-            toolbox: document.getElementById('toolbox'),
-            scrollbars: true,
-            trashcan: true
-        });
-    </script>
+  <script>
+    // Inject the visual Blockly workspace into the div
+    const workspace = Blockly.inject('blocklyDiv', {
+      toolbox: document.getElementById('toolbox')
+    });
+
+    // Real-time compilation listener
+    function updateCode() {
+      const code = Blockly.JavaScript.workspaceToCode(workspace);
+      document.getElementById('codeArea').value = code;
+    }
+    workspace.addChangeListener(updateCode);
+  </script>
 </body>
 </html>
