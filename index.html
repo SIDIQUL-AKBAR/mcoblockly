@@ -3,375 +3,389 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blockly Studio IDE</title>
+  <title>Shark Mod Studio</title>
 
-  <!-- Google Blockly CDN dependencies -->
-<!-- Load Blockly core -->
-<script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
-<!-- Load the default blocks -->
-<script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
-<!-- Load a generator -->
-<script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
-<!-- Load a message file -->
-<script src="https://unpkg.com/blockly/msg/en.js"></script>
+  <!-- Load Blockly core -->
+  <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
+  <!-- Load the default blocks -->
+  <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
+  <!-- Load a generator -->
+  <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
+  <!-- Load a message file -->
+  <script src="https://unpkg.com/blockly/msg/en.js"></script>
 
-  <!-- Fonts & Icons -->
+  <!-- Icons & Typography -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-dark: #0f172a;
-      --bg-panel: #1e293b;
-      --accent-color: #3b82f6;
-      --accent-hover: #2563eb;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --border-color: #334155;
-      --success-color: #10b981;
-      --danger-color: #ef4444;
+      --shark-cyan: #23ffd9;
+      --shark-cyan-glow: rgba(35, 255, 217, 0.35);
+      --shark-dark-bg: #030a16;
+      --shark-panel-bg: #09172a;
+      --shark-border: #142a45;
+      --shark-text: #f1f5f9;
+      --scratch-green: #22c55e;
+      --scratch-red: #ef4444;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
-    }
-
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--shark-dark-bg); color: var(--shark-text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
     /* Top Navigation Header */
     header {
-      background-color: var(--bg-panel);
-      border-bottom: 1px solid var(--border-color);
-      padding: 0.75rem 1.5rem;
+      background: var(--shark-panel-bg);
+      border-bottom: 2px solid var(--shark-cyan);
+      padding: 0 1.25rem;
+      height: 54px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      height: 60px;
+      box-shadow: 0 0 15px var(--shark-cyan-glow);
+      z-index: 10;
     }
 
-    .brand {
+    .brand-container {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      font-weight: 700;
-      font-size: 1.15rem;
-      color: var(--text-main);
     }
 
-    .brand i {
-      color: var(--accent-color);
-      font-size: 1.4rem;
-    }
-
-    .controls {
+    .brand-icon {
+      background: var(--shark-cyan);
+      color: #030a16;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
       display: flex;
-      gap: 0.5rem;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+      box-shadow: 0 0 10px var(--shark-cyan-glow);
     }
 
-    .btn {
-      background-color: #334155;
-      color: var(--text-main);
+    .brand-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 1px;
+      -webkit-text-stroke: 1.5px var(--shark-cyan);
+      text-shadow: 0 0 10px var(--shark-cyan-glow);
+    }
+
+    .controls { display: flex; gap: 0.75rem; align-items: center; }
+
+    .btn-go {
+      background: var(--scratch-green);
+      color: #fff;
       border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      font-weight: 500;
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      transition: all 0.2s ease;
-      font-size: 0.875rem;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+      transition: transform 0.1s;
     }
 
-    .btn:hover {
-      background-color: #475569;
-    }
-
-    .btn-primary {
-      background-color: var(--success-color);
+    .btn-stop {
+      background: var(--scratch-red);
       color: #fff;
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+      transition: transform 0.1s;
     }
 
-    .btn-primary:hover {
-      background-color: #059669;
-    }
-
-    .btn-danger {
-      background-color: var(--danger-color);
-      color: #fff;
-    }
-
-    .btn-danger:hover {
-      background-color: #dc2626;
-    }
+    .btn-go:active, .btn-stop:active { transform: scale(0.92); }
 
     /* Main Workspace Layout */
     main {
       display: grid;
-      grid-template-columns: 1fr 420px;
-      height: calc(100vh - 60px);
-      width: 100%;
+      grid-template-columns: 1fr 450px;
+      height: calc(100vh - 54px);
     }
 
-    #blocklyDiv {
-      height: 100%;
-      width: 100%;
-    }
+    #blocklyDiv { height: 100%; width: 100%; }
 
-    /* Right Side Output & Code Inspector */
-    .sidebar {
-      background-color: var(--bg-panel);
-      border-left: 1px solid var(--border-color);
-      display: grid;
-      grid-template-rows: 1fr 1fr;
-      overflow: hidden;
-    }
-
-    .panel {
+    /* Stage Panel */
+    .stage-section {
+      background: var(--shark-panel-bg);
+      border-left: 2px solid var(--shark-border);
       display: flex;
       flex-direction: column;
-      border-bottom: 1px solid var(--border-color);
-      overflow: hidden;
+      padding: 1rem;
+      gap: 1rem;
     }
 
-    .panel-header {
-      background-color: #0f172a;
-      padding: 0.6rem 1rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
+    .stage-card {
+      background: #000;
+      border: 2px solid var(--shark-cyan);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 18px var(--shark-cyan-glow);
+    }
+
+    .stage-header {
+      background: rgba(9, 23, 42, 0.95);
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--shark-cyan);
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      border-bottom: 1px solid var(--shark-border);
     }
 
-    pre, #consoleOutput {
+    canvas { display: block; width: 100%; height: 300px; }
+
+    .sprite-pane {
+      background: rgba(3, 10, 22, 0.7);
+      border: 1px solid var(--shark-border);
+      border-radius: 10px;
       padding: 1rem;
-      font-family: 'Fira Code', monospace;
-      font-size: 0.875rem;
-      color: #38bdf8;
-      background: #090d16;
-      height: 100%;
-      overflow-y: auto;
-      white-space: pre-wrap;
+      flex-grow: 1;
     }
 
-    #consoleOutput {
-      color: #4ade80;
+    .sprite-pane-header {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      margin-bottom: 0.75rem;
     }
 
-    /* Customize Blockly Canvas appearance */
-    .blocklyToolboxDiv {
-      background-color: var(--bg-panel) !important;
-      border-right: 1px solid var(--border-color) !important;
+    .sprite-card {
+      background: var(--shark-panel-bg);
+      border: 2px solid var(--shark-cyan);
+      border-radius: 8px;
+      padding: 0.5rem;
+      text-align: center;
+      width: 85px;
+      box-shadow: 0 0 10px var(--shark-cyan-glow);
     }
 
-    .blocklyFlyoutBackground {
-      fill: var(--bg-dark) !important;
-    }
+    .sprite-card img { width: 44px; height: 44px; object-fit: contain; }
+    .sprite-card span { display: block; font-size: 0.75rem; margin-top: 4px; font-weight: 600; }
+
+    /* Blockly Theme Styling */
+    .blocklySvg { background-color: #040c1a !important; }
+    .blocklyToolboxDiv { background-color: var(--shark-panel-bg) !important; border-right: 1px solid var(--shark-border) !important; }
+    .blocklyFlyoutBackground { fill: #061224 !important; }
   </style>
 </head>
 <body>
 
-  <!-- Top Bar Controls -->
+  <!-- Top Bar Navbar -->
   <header>
-    <div class="brand">
-      <i class="fa-solid fa-cubes"></i> Blockly Studio
+    <div class="brand-container">
+      <div class="brand-icon">S</div>
+      <div class="brand-title">SHARKMOD</div>
     </div>
     <div class="controls">
-      <button class="btn btn-primary" id="runBtn">
-        <i class="fa-solid fa-play"></i> Run Code
-      </button>
-      <button class="btn" id="saveBtn">
-        <i class="fa-solid fa-download"></i> Export JSON
-      </button>
-      <button class="btn" id="loadBtn">
-        <i class="fa-solid fa-upload"></i> Load JSON
-      </button>
-      <button class="btn btn-danger" id="clearBtn">
-        <i class="fa-solid fa-trash"></i> Reset
-      </button>
+      <button class="btn-go" id="runBtn"><i class="fa-solid fa-flag"></i> GO</button>
+      <button class="btn-stop" id="stopBtn"><i class="fa-solid fa-stop"></i></button>
     </div>
   </header>
 
-  <!-- Workspace Container -->
+  <!-- Workspace Grid -->
   <main>
     <div id="blocklyDiv"></div>
 
-    <!-- Inspector Panels -->
-    <div class="sidebar">
-      <div class="panel">
-        <div class="panel-header">
-          <span><i class="fa-solid fa-code"></i> Generated JS</span>
+    <!-- Stage View -->
+    <div class="stage-section">
+      <div class="stage-card">
+        <div class="stage-header">
+          <span>STAGE (480x360)</span>
+          <span>FPS: 60</span>
         </div>
-        <pre><code id="codePreview">// Drag blocks into workspace to generate code...</code></pre>
+        <canvas id="stageCanvas" width="480" height="360"></canvas>
       </div>
-      <div class="panel">
-        <div class="panel-header">
-          <span><i class="fa-solid fa-terminal"></i> Console Output</span>
-          <button class="btn" id="clearConsoleBtn" style="padding: 2px 6px; font-size: 0.75rem;">Clear</button>
+
+      <!-- Sprite Manager -->
+      <div class="sprite-pane">
+        <div class="sprite-pane-header">Sprites & Backdrops</div>
+        <div class="sprite-card">
+          <img src="https://api.iconify.design/twemoji:shark.svg" alt="Shark Sprite">
+          <span>Shark</span>
         </div>
-        <div id="consoleOutput">System Ready. Click "Run Code" to execute script...</div>
       </div>
     </div>
   </main>
 
   <script>
-    // 1. Define Toolbox Categories & Elements
-    const toolboxSchema = {
-      "kind": "categoryToolbox",
-      "contents": [
-        {
-          "kind": "category",
-          "name": "Logic",
-          "colour": "#5b80a5",
-          "contents": [
-            { "kind": "block", "type": "controls_if" },
-            { "kind": "block", "type": "logic_compare" },
-            { "kind": "block", "type": "logic_boolean" }
-          ]
-        },
-        {
-          "kind": "category",
-          "name": "Loops",
-          "colour": "#5ba55b",
-          "contents": [
-            { "kind": "block", "type": "controls_repeat_ext" },
-            { "kind": "block", "type": "controls_whileUntil" }
-          ]
-        },
-        {
-          "kind": "category",
-          "name": "Math",
-          "colour": "#5b6da5",
-          "contents": [
-            { "kind": "block", "type": "math_number" },
-            { "kind": "block", "type": "math_arithmetic" }
-          ]
-        },
-        {
-          "kind": "category",
-          "name": "Text & Output",
-          "colour": "#5ba5a5",
-          "contents": [
-            { "kind": "block", "type": "text" },
-            { "kind": "block", "type": "text_print" },
-            { "kind": "block", "type": "custom_console_log" }
-          ]
-        },
-        {
-          "kind": "category",
-          "name": "Variables",
-          "custom": "VARIABLE",
-          "colour": "#a55ba5"
-        }
-      ]
-    };
+    // 1. Stage Engine Configuration
+    const canvas = document.getElementById('stageCanvas');
+    const ctx = canvas.getContext('2d');
 
-    // 2. Define Custom Block Definition
-    Blockly.Blocks['custom_console_log'] = {
+    const state = {
+      backdrop: 'ocean',
+      sprite: {
+        x: 240,
+        y: 180,
+        size: 70,
+        rotation: 0,
+        img: new Image()
+      }
+    };
+    state.sprite.img.src = 'https://api.iconify.design/twemoji:shark.svg';
+
+    function renderStage() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (state.backdrop === 'ocean') {
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, '#004e89');
+        gradient.addColorStop(1, '#001a33');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      } else if (state.backdrop === 'abyss') {
+        ctx.fillStyle = '#020617';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.fillStyle = '#09172a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      ctx.save();
+      ctx.translate(state.sprite.x, state.sprite.y);
+      ctx.rotate((state.sprite.rotation * Math.PI) / 180);
+      ctx.drawImage(
+        state.sprite.img,
+        -state.sprite.size / 2,
+        -state.sprite.size / 2,
+        state.sprite.size,
+        state.sprite.size
+      );
+      ctx.restore();
+    }
+    state.sprite.img.onload = renderStage;
+
+    // Helper compatibility accessor for modern Blockly versions vs CDN versions
+    const jsGen = (typeof javascript !== 'undefined' && javascript.javascriptGenerator) 
+      ? javascript.javascriptGenerator 
+      : Blockly.JavaScript;
+
+    // 2. Define Custom Blocks
+    Blockly.Blocks['move_steps'] = {
       init: function() {
-        this.appendValueInput("TEXT")
-            .setCheck(null)
-            .appendField("log message");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(160);
-        this.setTooltip("Prints text to output terminal");
+        this.appendValueInput("STEPS").setCheck("Number").appendField("move");
+        this.appendDummyInput().appendField("steps");
+        this.setPreviousStatement(true); this.setNextStatement(true);
+        this.setColour("#22c55e");
       }
     };
 
-    // Code generator for custom block
-    javascript.javascriptGenerator.forBlock['custom_console_log'] = function(block, generator) {
-      const text = generator.valueToCode(block, 'TEXT', javascript.Order.NONE) || '""';
-      return `customLog(${text});\n`;
+    jsGen.forBlock['move_steps'] = function(block, generator) {
+      const steps = generator.valueToCode(block, 'STEPS', 0) || '0';
+      return `moveSteps(${steps});\n`;
+    };
+
+    Blockly.Blocks['turn_right'] = {
+      init: function() {
+        this.appendValueInput("DEGREES").setCheck("Number").appendField("turn ↻");
+        this.appendDummyInput().appendField("degrees");
+        this.setPreviousStatement(true); this.setNextStatement(true);
+        this.setColour("#22c55e");
+      }
+    };
+
+    jsGen.forBlock['turn_right'] = function(block, generator) {
+      const deg = generator.valueToCode(block, 'DEGREES', 0) || '0';
+      return `turnRight(${deg});\n`;
+    };
+
+    Blockly.Blocks['switch_backdrop'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField("switch backdrop to")
+            .appendField(new Blockly.FieldDropdown([
+              ["Deep Ocean", "ocean"],
+              ["Dark Abyss", "abyss"],
+              ["Grid Mode", "grid"]
+            ]), "BG");
+        this.setPreviousStatement(true); this.setNextStatement(true);
+        this.setColour("#23ffd9");
+      }
+    };
+
+    jsGen.forBlock['switch_backdrop'] = function(block) {
+      return `switchBackdrop("${block.getFieldValue('BG')}");\n`;
     };
 
     // 3. Inject Blockly Workspace
     const workspace = Blockly.inject('blocklyDiv', {
-      toolbox: toolboxSchema,
-      grid: { spacing: 20, length: 3, colour: '#334155', snap: true },
-      trashcan: true,
-      zoom: { controls: true, wheel: true, startScale: 1.0, maxScale: 3, minScale: 0.3 }
+      toolbox: {
+        kind: "categoryToolbox",
+        contents: [
+          {
+            kind: "category", name: "Motion", colour: "#22c55e",
+            contents: [
+              { kind: "block", type: "move_steps" },
+              { kind: "block", type: "turn_right" }
+            ]
+          },
+          {
+            kind: "category", name: "Looks", colour: "#23ffd9",
+            contents: [{ kind: "block", type: "switch_backdrop" }]
+          },
+          {
+            kind: "category", name: "Operators", colour: "#3b82f6",
+            contents: [{ kind: "block", type: "math_number" }]
+          }
+        ]
+      },
+      grid: { spacing: 20, length: 3, colour: '#142a45', snap: true },
+      trashcan: true
     });
 
-    // 4. Live Code Generation Listener
-    function updateCodePreview() {
-      const code = javascript.javascriptGenerator.workspaceToCode(workspace);
-      document.getElementById('codePreview').textContent = code || '// Add blocks to canvas...';
+    // 4. Execution Logic
+    function moveSteps(steps) {
+      const rad = (state.sprite.rotation * Math.PI) / 180;
+      state.sprite.x += Math.cos(rad) * steps;
+      state.sprite.y += Math.sin(rad) * steps;
+      renderStage();
     }
-    workspace.addChangeListener(updateCodePreview);
 
-    // 5. Code Execution Engine
-    const consoleOutput = document.getElementById('consoleOutput');
-    
-    function customLog(message) {
-      consoleOutput.innerHTML += `<div>> ${String(message)}</div>`;
-      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    function turnRight(deg) {
+      state.sprite.rotation += Number(deg);
+      renderStage();
+    }
+
+    function switchBackdrop(bg) {
+      state.backdrop = bg;
+      renderStage();
     }
 
     document.getElementById('runBtn').addEventListener('click', () => {
-      consoleOutput.innerHTML = '<div style="color: #94a3b8;">-- Executing Script --</div>';
-      const code = javascript.javascriptGenerator.workspaceToCode(workspace);
-      
+      const code = jsGen.workspaceToCode(workspace);
       try {
-        // Safe evaluation wrapping console output
-        const runFunction = new Function('customLog', 'alert', code);
-        runFunction(customLog, customLog); // Override browser alert to direct to console
-      } catch (e) {
-        consoleOutput.innerHTML += `<div style="color: #ef4444;">Error: ${e.message}</div>`;
+        const run = new Function('moveSteps', 'turnRight', 'switchBackdrop', code);
+        run(moveSteps, turnRight, switchBackdrop);
+      } catch (err) {
+        console.error(err);
       }
     });
 
-    // 6. Action Handlers (Export / Import / Clear)
-    document.getElementById('clearBtn').addEventListener('click', () => {
-      if (confirm("Reset workspace? Unsaved changes will be lost.")) {
-        workspace.clear();
-        consoleOutput.innerHTML = 'Workspace cleared.';
-      }
-    });
-
-    document.getElementById('clearConsoleBtn').addEventListener('click', () => {
-      consoleOutput.innerHTML = '';
-    });
-
-    document.getElementById('saveBtn').addEventListener('click', () => {
-      const state = Blockly.serialization.workspaces.save(workspace);
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", "blockly-project.json");
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    });
-
-    document.getElementById('loadBtn').addEventListener('click', () => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'application/json';
-      input.onchange = e => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = event => {
-          const state = JSON.parse(event.target.result);
-          Blockly.serialization.workspaces.load(state, workspace);
-        };
-        reader.readAsText(file);
-      };
-      input.click();
+    document.getElementById('stopBtn').addEventListener('click', () => {
+      state.sprite.x = 240;
+      state.sprite.y = 180;
+      state.sprite.rotation = 0;
+      state.backdrop = 'ocean';
+      renderStage();
     });
   </script>
 </body>
