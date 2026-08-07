@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Custom Block Coding Platform</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- Inject Blockly core and standard blocks -->
- <!-- Load Blockly core -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blockly Studio IDE</title>
+
+  <!-- Google Blockly CDN dependencies -->
+<!-- Load Blockly core -->
 <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
 <!-- Load the default blocks -->
 <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
@@ -13,45 +14,365 @@
 <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
 <!-- Load a message file -->
 <script src="https://unpkg.com/blockly/msg/en.js"></script>
-<script src="https://unpkg.com/blockly"></script>
-<script src="https://unpkg.com/blockly/javascript_compressed"></script>
-<script src="https://unpkg.com/blockly/python_compressed"></script>
-<script src="https://unpkg.com/blockly/php_compressed"></script>
-<script src="https://unpkg.com/blockly/lua_compressed"></script>
-<script src="https://unpkg.com/blockly/dart_compressed"></script>
+
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-panel: #1e293b;
+      --accent-color: #3b82f6;
+      --accent-hover: #2563eb;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Navigation Header */
+    header {
+      background-color: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 60px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--text-main);
+    }
+
+    .brand i {
+      color: var(--accent-color);
+      font-size: 1.4rem;
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      background-color: #334155;
+      color: var(--text-main);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+    }
+
+    .btn:hover {
+      background-color: #475569;
+    }
+
+    .btn-primary {
+      background-color: var(--success-color);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background-color: #059669;
+    }
+
+    .btn-danger {
+      background-color: var(--danger-color);
+      color: #fff;
+    }
+
+    .btn-danger:hover {
+      background-color: #dc2626;
+    }
+
+    /* Main Workspace Layout */
+    main {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      height: calc(100vh - 60px);
+      width: 100%;
+    }
+
+    #blocklyDiv {
+      height: 100%;
+      width: 100%;
+    }
+
+    /* Right Side Output & Code Inspector */
+    .sidebar {
+      background-color: var(--bg-panel);
+      border-left: 1px solid var(--border-color);
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      overflow: hidden;
+    }
+
+    .panel {
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      background-color: #0f172a;
+      padding: 0.6rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    pre, #consoleOutput {
+      padding: 1rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.875rem;
+      color: #38bdf8;
+      background: #090d16;
+      height: 100%;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    #consoleOutput {
+      color: #4ade80;
+    }
+
+    /* Customize Blockly Canvas appearance */
+    .blocklyToolboxDiv {
+      background-color: var(--bg-panel) !important;
+      border-right: 1px solid var(--border-color) !important;
+    }
+
+    .blocklyFlyoutBackground {
+      fill: var(--bg-dark) !important;
+    }
+  </style>
 </head>
 <body>
 
-  <div id="ui-wrapper">
-    <!-- The block selector sidebar and canvas grid -->
-    <div id="blocklyDiv"></div>
-    
-    <!-- Real-time code preview and output execution -->
-    <div id="outputPanel">
-      <button id="runBtn">▶ Run Code</button>
-      <pre id="codePreview">// Generated JavaScript will appear here</pre>
+  <!-- Top Bar Controls -->
+  <header>
+    <div class="brand">
+      <i class="fa-solid fa-cubes"></i> Blockly Studio
     </div>
-  </div>
+    <div class="controls">
+      <button class="btn btn-primary" id="runBtn">
+        <i class="fa-solid fa-play"></i> Run Code
+      </button>
+      <button class="btn" id="saveBtn">
+        <i class="fa-solid fa-download"></i> Export JSON
+      </button>
+      <button class="btn" id="loadBtn">
+        <i class="fa-solid fa-upload"></i> Load JSON
+      </button>
+      <button class="btn btn-danger" id="clearBtn">
+        <i class="fa-solid fa-trash"></i> Reset
+      </button>
+    </div>
+  </header>
 
-  <!-- Define your toolbox (the sidebar choices) -->
-  <xml id="toolbox" style="display: none">
-    <category name="Logic" colour="%{BKY_LOGIC_HUE}">
-      <block type="controls_if"></block>
-      <block type="logic_compare"></block>
-    </category>
-    <category name="Loops" colour="%{BKY_LOOPS_HUE}">
-      <block type="controls_repeat_ext"></block>
-    </category>
-    <category name="Math" colour="%{BKY_MATH_HUE}">
-      <block type="math_number"></block>
-      <block type="math_arithmetic"></block>
-    </category>
-    <category name="Text" colour="%{BKY_TEXT_HUE}">
-      <block type="text"></block>
-      <block type="text_print"></block>
-    </category>
-  </xml>
+  <!-- Workspace Container -->
+  <main>
+    <div id="blocklyDiv"></div>
 
-  <script src="app.js"></script>
+    <!-- Inspector Panels -->
+    <div class="sidebar">
+      <div class="panel">
+        <div class="panel-header">
+          <span><i class="fa-solid fa-code"></i> Generated JS</span>
+        </div>
+        <pre><code id="codePreview">// Drag blocks into workspace to generate code...</code></pre>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <span><i class="fa-solid fa-terminal"></i> Console Output</span>
+          <button class="btn" id="clearConsoleBtn" style="padding: 2px 6px; font-size: 0.75rem;">Clear</button>
+        </div>
+        <div id="consoleOutput">System Ready. Click "Run Code" to execute script...</div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // 1. Define Toolbox Categories & Elements
+    const toolboxSchema = {
+      "kind": "categoryToolbox",
+      "contents": [
+        {
+          "kind": "category",
+          "name": "Logic",
+          "colour": "#5b80a5",
+          "contents": [
+            { "kind": "block", "type": "controls_if" },
+            { "kind": "block", "type": "logic_compare" },
+            { "kind": "block", "type": "logic_boolean" }
+          ]
+        },
+        {
+          "kind": "category",
+          "name": "Loops",
+          "colour": "#5ba55b",
+          "contents": [
+            { "kind": "block", "type": "controls_repeat_ext" },
+            { "kind": "block", "type": "controls_whileUntil" }
+          ]
+        },
+        {
+          "kind": "category",
+          "name": "Math",
+          "colour": "#5b6da5",
+          "contents": [
+            { "kind": "block", "type": "math_number" },
+            { "kind": "block", "type": "math_arithmetic" }
+          ]
+        },
+        {
+          "kind": "category",
+          "name": "Text & Output",
+          "colour": "#5ba5a5",
+          "contents": [
+            { "kind": "block", "type": "text" },
+            { "kind": "block", "type": "text_print" },
+            { "kind": "block", "type": "custom_console_log" }
+          ]
+        },
+        {
+          "kind": "category",
+          "name": "Variables",
+          "custom": "VARIABLE",
+          "colour": "#a55ba5"
+        }
+      ]
+    };
+
+    // 2. Define Custom Block Definition
+    Blockly.Blocks['custom_console_log'] = {
+      init: function() {
+        this.appendValueInput("TEXT")
+            .setCheck(null)
+            .appendField("log message");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(160);
+        this.setTooltip("Prints text to output terminal");
+      }
+    };
+
+    // Code generator for custom block
+    javascript.javascriptGenerator.forBlock['custom_console_log'] = function(block, generator) {
+      const text = generator.valueToCode(block, 'TEXT', javascript.Order.NONE) || '""';
+      return `customLog(${text});\n`;
+    };
+
+    // 3. Inject Blockly Workspace
+    const workspace = Blockly.inject('blocklyDiv', {
+      toolbox: toolboxSchema,
+      grid: { spacing: 20, length: 3, colour: '#334155', snap: true },
+      trashcan: true,
+      zoom: { controls: true, wheel: true, startScale: 1.0, maxScale: 3, minScale: 0.3 }
+    });
+
+    // 4. Live Code Generation Listener
+    function updateCodePreview() {
+      const code = javascript.javascriptGenerator.workspaceToCode(workspace);
+      document.getElementById('codePreview').textContent = code || '// Add blocks to canvas...';
+    }
+    workspace.addChangeListener(updateCodePreview);
+
+    // 5. Code Execution Engine
+    const consoleOutput = document.getElementById('consoleOutput');
+    
+    function customLog(message) {
+      consoleOutput.innerHTML += `<div>> ${String(message)}</div>`;
+      consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+
+    document.getElementById('runBtn').addEventListener('click', () => {
+      consoleOutput.innerHTML = '<div style="color: #94a3b8;">-- Executing Script --</div>';
+      const code = javascript.javascriptGenerator.workspaceToCode(workspace);
+      
+      try {
+        // Safe evaluation wrapping console output
+        const runFunction = new Function('customLog', 'alert', code);
+        runFunction(customLog, customLog); // Override browser alert to direct to console
+      } catch (e) {
+        consoleOutput.innerHTML += `<div style="color: #ef4444;">Error: ${e.message}</div>`;
+      }
+    });
+
+    // 6. Action Handlers (Export / Import / Clear)
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      if (confirm("Reset workspace? Unsaved changes will be lost.")) {
+        workspace.clear();
+        consoleOutput.innerHTML = 'Workspace cleared.';
+      }
+    });
+
+    document.getElementById('clearConsoleBtn').addEventListener('click', () => {
+      consoleOutput.innerHTML = '';
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      const state = Blockly.serialization.workspaces.save(workspace);
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "blockly-project.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    });
+
+    document.getElementById('loadBtn').addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/json';
+      input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = event => {
+          const state = JSON.parse(event.target.result);
+          Blockly.serialization.workspaces.load(state, workspace);
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    });
+  </script>
 </body>
 </html>
