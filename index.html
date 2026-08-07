@@ -3,224 +3,314 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shark Mod Studio</title>
+  <title>SHARKMOD - Editor</title>
+
+  <!-- Favicon setup using 2nd Image -->
+  <link rel="icon" type="image/png" href="src/favicon.png">
 
   <!-- Load Blockly core -->
   <script src="https://unpkg.com/blockly/blockly_compressed.js"></script>
-  <!-- Load the default blocks -->
   <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
-  <!-- Load a generator -->
   <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
-  <!-- Load a message file -->
   <script src="https://unpkg.com/blockly/msg/en.js"></script>
 
   <!-- Icons & Typography -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --shark-cyan: #23ffd9;
-      --shark-cyan-glow: rgba(35, 255, 217, 0.35);
-      --shark-dark-bg: #030a16;
-      --shark-panel-bg: #09172a;
-      --shark-border: #142a45;
-      --shark-text: #f1f5f9;
-      --scratch-green: #22c55e;
-      --scratch-red: #ef4444;
+      /* Scratch UI Colors from Screenshot */
+      --scratch-purple: #855cd6;
+      --scratch-purple-dark: #6e41c4;
+      --scratch-bg: #e9f0f8;
+      --scratch-panel-bg: #ffffff;
+      --scratch-border: #d9e3f0;
+      --scratch-text: #575e75;
+      --scratch-green: #4cbf56;
+      --scratch-red: #ff4c4c;
+      --scratch-yellow: #ffab19;
+      --scratch-motion: #4c97ff;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-    body { background-color: var(--shark-dark-bg); color: var(--shark-text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    body { background-color: var(--scratch-bg); color: var(--scratch-text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; user-select: none; }
 
-    /* Top Navigation Header */
+    /* 1. Top Navbar (Purple Scratch Header) */
     header {
-      background: var(--shark-panel-bg);
-      border-bottom: 2px solid var(--shark-cyan);
-      padding: 0 1.25rem;
-      height: 54px;
+      background: var(--scratch-purple);
+      height: 48px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 0 15px var(--shark-cyan-glow);
-      z-index: 10;
+      padding: 0 1rem;
+      color: #fff;
     }
 
-    .brand-container {
+    .nav-left { display: flex; align-items: center; gap: 0.75rem; }
+    
+    /* Logo from 3rd Image */
+    .brand-logo {
+      height: 30px;
+      width: auto;
+      object-fit: contain;
+      cursor: pointer;
+    }
+
+    .nav-item {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: rgba(0,0,0,0.1);
+    }
+    .nav-item:hover { background: rgba(0,0,0,0.2); }
+
+    .project-title {
+      background: var(--scratch-purple-dark);
+      border: 1px solid rgba(0,0,0,0.15);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      outline: none;
     }
 
-    .brand-icon {
-      background: var(--shark-cyan);
-      color: #030a16;
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Fredoka', sans-serif;
-      font-weight: 700;
-      font-size: 1.4rem;
-      box-shadow: 0 0 10px var(--shark-cyan-glow);
-    }
-
-    .brand-title {
-      font-family: 'Fredoka', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #ffffff;
-      letter-spacing: 1px;
-      -webkit-text-stroke: 1.5px var(--shark-cyan);
-      text-shadow: 0 0 10px var(--shark-cyan-glow);
-    }
-
-    .controls { display: flex; gap: 0.75rem; align-items: center; }
-
-    .btn-go {
-      background: var(--scratch-green);
+    .btn-share {
+      background: var(--scratch-yellow);
       color: #fff;
       border: none;
-      padding: 6px 18px;
-      border-radius: 20px;
+      padding: 5px 14px;
+      border-radius: 4px;
       font-weight: 700;
+      font-size: 0.8rem;
       cursor: pointer;
+    }
+
+    /* 2. Main Workspace Layout (Scratch 3.0 Grid) */
+    main {
+      display: grid;
+      grid-template-columns: 1fr 440px;
+      height: calc(100vh - 48px);
+      overflow: hidden;
+    }
+
+    /* Left Panel: Tabs & Blockly Canvas */
+    .editor-section {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-right: 1px solid var(--scratch-border);
+    }
+
+    .tab-bar {
+      display: flex;
+      background: #fff;
+      border-bottom: 1px solid var(--scratch-border);
+      padding-left: 0.5rem;
+      gap: 0.25rem;
+    }
+
+    .tab {
+      padding: 8px 16px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #888;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
       display: flex;
       align-items: center;
       gap: 6px;
-      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-      transition: transform 0.1s;
     }
 
-    .btn-stop {
-      background: var(--scratch-red);
-      color: #fff;
-      border: none;
-      width: 34px;
-      height: 34px;
+    .tab.active {
+      color: var(--scratch-purple);
+      border-bottom-color: var(--scratch-purple);
+    }
+
+    #blocklyDiv { flex: 1; width: 100%; }
+
+    /* Right Panel: Stage + Controls + Sprites List */
+    .stage-section {
+      display: flex;
+      flex-direction: column;
+      background: var(--scratch-bg);
+      padding: 0.5rem;
+      gap: 0.5rem;
+      overflow-y: auto;
+    }
+
+    /* Stage Controls Bar */
+    .stage-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2px 4px;
+    }
+
+    .green-flag, .stop-sign {
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
+      border: none;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-      transition: transform 0.1s;
+      font-size: 1rem;
     }
+    .green-flag { background: #e6f9e6; color: var(--scratch-green); }
+    .stop-sign { background: #ffe6e6; color: var(--scratch-red); }
 
-    .btn-go:active, .btn-stop:active { transform: scale(0.92); }
-
-    /* Main Workspace Layout */
-    main {
-      display: grid;
-      grid-template-columns: 1fr 450px;
-      height: calc(100vh - 54px);
-    }
-
-    #blocklyDiv { height: 100%; width: 100%; }
-
-    /* Stage Panel */
-    .stage-section {
-      background: var(--shark-panel-bg);
-      border-left: 2px solid var(--shark-border);
-      display: flex;
-      flex-direction: column;
-      padding: 1rem;
-      gap: 1rem;
-    }
-
-    .stage-card {
-      background: #000;
-      border: 2px solid var(--shark-cyan);
-      border-radius: 12px;
+    /* Canvas Frame */
+    .stage-canvas-card {
+      background: #fff;
+      border: 1px solid var(--scratch-border);
+      border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0 0 18px var(--shark-cyan-glow);
     }
 
-    .stage-header {
-      background: rgba(9, 23, 42, 0.95);
-      padding: 6px 12px;
+    canvas { display: block; width: 100%; height: 320px; background: #fff; }
+
+    /* Sprite Settings Panel */
+    .sprite-info-pane {
+      background: #fff;
+      border: 1px solid var(--scratch-border);
+      border-radius: 8px;
+      padding: 0.75rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
       font-size: 0.75rem;
       font-weight: 700;
-      color: var(--shark-cyan);
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--shark-border);
+      color: #575e75;
     }
 
-    canvas { display: block; width: 100%; height: 300px; }
-
-    .sprite-pane {
-      background: rgba(3, 10, 22, 0.7);
-      border: 1px solid var(--shark-border);
-      border-radius: 10px;
-      padding: 1rem;
-      flex-grow: 1;
+    .info-group { display: flex; align-items: center; gap: 4px; }
+    .info-input {
+      width: 100%;
+      padding: 4px 6px;
+      border: 1px solid var(--scratch-border);
+      border-radius: 12px;
+      text-align: center;
+      font-size: 0.75rem;
+      background: var(--scratch-bg);
     }
 
-    .sprite-pane-header {
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #94a3b8;
-      margin-bottom: 0.75rem;
+    /* Sprites & Backdrops Container */
+    .assets-container {
+      display: grid;
+      grid-template-columns: 1fr 100px;
+      gap: 0.5rem;
+      flex: 1;
     }
 
-    .sprite-card {
-      background: var(--shark-panel-bg);
-      border: 2px solid var(--shark-cyan);
+    .sprite-selector, .backdrop-selector {
+      background: #fff;
+      border: 1px solid var(--scratch-border);
       border-radius: 8px;
       padding: 0.5rem;
-      text-align: center;
-      width: 85px;
-      box-shadow: 0 0 10px var(--shark-cyan-glow);
+      display: flex;
+      flex-direction: column;
     }
 
-    .sprite-card img { width: 44px; height: 44px; object-fit: contain; }
-    .sprite-card span { display: block; font-size: 0.75rem; margin-top: 4px; font-weight: 600; }
+    .section-title { font-size: 0.7rem; font-weight: 700; color: #888; margin-bottom: 0.5rem; }
 
-    /* Blockly Theme Styling */
-    .blocklySvg { background-color: #040c1a !important; }
-    .blocklyToolboxDiv { background-color: var(--shark-panel-bg) !important; border-right: 1px solid var(--shark-border) !important; }
-    .blocklyFlyoutBackground { fill: #061224 !important; }
+    .sprite-grid { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    .sprite-box {
+      width: 68px;
+      height: 68px;
+      border: 2px solid var(--scratch-purple);
+      border-radius: 8px;
+      background: #f9f5ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .sprite-box img { width: 36px; height: 36px; object-fit: contain; }
+    .sprite-box span { font-size: 0.65rem; font-weight: 600; margin-top: 2px; }
+
+    /* Custom Theme Overrides for Blockly Workspace */
+    .blocklySvg { background-color: #f9fafc !important; }
+    .blocklyToolboxDiv { background-color: #fff !important; border-right: 1px solid var(--scratch-border) !important; }
   </style>
 </head>
 <body>
 
-  <!-- Top Bar Navbar -->
+  <!-- 1. Top Scratch Navigation Header -->
   <header>
-    <div class="brand-container">
-      <div class="brand-icon">S</div>
-      <div class="brand-title">SHARKMOD</div>
-    </div>
-    <div class="controls">
-      <button class="btn-go" id="runBtn"><i class="fa-solid fa-flag"></i> GO</button>
-      <button class="btn-stop" id="stopBtn"><i class="fa-solid fa-stop"></i></button>
+    <div class="nav-left">
+      <!-- 3rd Image: SHARKMOD text logo -->
+      <img src="src/logo.png" alt="SHARKMOD" class="brand-logo" onerror="this.src='https://api.iconify.design/twemoji:shark.svg';">
+      <div class="nav-item"><i class="fa-solid fa-globe"></i></div>
+      <div class="nav-item">Settings <i class="fa-solid fa-caret-down"></i></div>
+      <div class="nav-item">File <i class="fa-solid fa-caret-down"></i></div>
+      <div class="nav-item">Edit <i class="fa-solid fa-caret-down"></i></div>
+      <input type="text" class="project-title" value="SharkProject-1">
+      <button class="btn-share">Share</button>
     </div>
   </header>
 
-  <!-- Workspace Grid -->
+  <!-- 2. Scratch Editor Main Layout -->
   <main>
-    <div id="blocklyDiv"></div>
+    <div class="editor-section">
+      <!-- Tab Controls -->
+      <div class="tab-bar">
+        <div class="tab active"><i class="fa-solid fa-code"></i> Code</div>
+        <div class="tab"><i class="fa-solid fa-paint-brush"></i> Costumes</div>
+        <div class="tab"><i class="fa-solid fa-volume-high"></i> Sounds</div>
+      </div>
+      <!-- Blockly Workspace -->
+      <div id="blocklyDiv"></div>
+    </div>
 
-    <!-- Stage View -->
+    <!-- Right Side Stage Dashboard -->
     <div class="stage-section">
-      <div class="stage-card">
-        <div class="stage-header">
-          <span>STAGE (480x360)</span>
-          <span>FPS: 60</span>
+      <!-- Green Flag & Stop Button -->
+      <div class="stage-bar">
+        <div style="display:flex; gap:0.5rem;">
+          <button class="green-flag" id="runBtn"><i class="fa-solid fa-flag"></i></button>
+          <button class="stop-sign" id="stopBtn"><i class="fa-solid fa-circle"></i></button>
         </div>
+      </div>
+
+      <!-- Stage Canvas Frame -->
+      <div class="stage-canvas-card">
         <canvas id="stageCanvas" width="480" height="360"></canvas>
       </div>
 
-      <!-- Sprite Manager -->
-      <div class="sprite-pane">
-        <div class="sprite-pane-header">Sprites & Backdrops</div>
-        <div class="sprite-card">
-          <img src="https://api.iconify.design/twemoji:shark.svg" alt="Shark Sprite">
-          <span>Shark</span>
+      <!-- Sprite Parameter Inputs -->
+      <div class="sprite-info-pane">
+        <div class="info-group">Sprite <input type="text" class="info-input" value="Shark"></div>
+        <div class="info-group">X <input type="text" class="info-input" id="inputX" value="0"></div>
+        <div class="info-group">Y <input type="text" class="info-input" id="inputY" value="0"></div>
+        <div class="info-group">Size <input type="text" class="info-input" value="100"></div>
+      </div>
+
+      <!-- Sprites and Backdrop Selector Grid -->
+      <div class="assets-container">
+        <div class="sprite-selector">
+          <div class="section-title">Sprites</div>
+          <div class="sprite-grid">
+            <div class="sprite-box">
+              <img src="src/shark.svg" alt="Shark" onerror="this.src='https://api.iconify.design/twemoji:shark.svg';">
+              <span>Shark</span>
+            </div>
+          </div>
+        </div>
+        <div class="backdrop-selector">
+          <div class="section-title">Stage</div>
+          <div style="text-align:center; font-size:0.7rem; font-weight:bold; margin-top:0.5rem;">Ocean</div>
         </div>
       </div>
     </div>
@@ -232,7 +322,6 @@
     const ctx = canvas.getContext('2d');
 
     const state = {
-      backdrop: 'ocean',
       sprite: {
         x: 240,
         y: 180,
@@ -241,25 +330,19 @@
         img: new Image()
       }
     };
-    state.sprite.img.src = 'https://api.iconify.design/twemoji:shark.svg';
+    state.sprite.img.src = 'src/shark.svg';
+    state.sprite.img.onerror = () => {
+      state.sprite.img.src = 'https://api.iconify.design/twemoji:shark.svg';
+    };
 
     function renderStage() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      if (state.backdrop === 'ocean') {
-        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, '#004e89');
-        gradient.addColorStop(1, '#001a33');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      } else if (state.backdrop === 'abyss') {
-        ctx.fillStyle = '#020617';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      } else {
-        ctx.fillStyle = '#09172a';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
+      // Background Grid Pattern like Scratch
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+      // Render Sprite
       ctx.save();
       ctx.translate(state.sprite.x, state.sprite.y);
       ctx.rotate((state.sprite.rotation * Math.PI) / 180);
@@ -271,21 +354,25 @@
         state.sprite.size
       );
       ctx.restore();
+
+      // Update X/Y input values
+      document.getElementById('inputX').value = Math.round(state.sprite.x - 240);
+      document.getElementById('inputY').value = Math.round(180 - state.sprite.y);
     }
     state.sprite.img.onload = renderStage;
 
-    // Helper compatibility accessor for modern Blockly versions vs CDN versions
+    // Generator accessor compatibility
     const jsGen = (typeof javascript !== 'undefined' && javascript.javascriptGenerator) 
       ? javascript.javascriptGenerator 
       : Blockly.JavaScript;
 
-    // 2. Define Custom Blocks
+    // 2. Custom Scratch Motion Blocks
     Blockly.Blocks['move_steps'] = {
       init: function() {
         this.appendValueInput("STEPS").setCheck("Number").appendField("move");
         this.appendDummyInput().appendField("steps");
         this.setPreviousStatement(true); this.setNextStatement(true);
-        this.setColour("#22c55e");
+        this.setColour("#4c97ff");
       }
     };
 
@@ -299,7 +386,7 @@
         this.appendValueInput("DEGREES").setCheck("Number").appendField("turn ↻");
         this.appendDummyInput().appendField("degrees");
         this.setPreviousStatement(true); this.setNextStatement(true);
-        this.setColour("#22c55e");
+        this.setColour("#4c97ff");
       }
     };
 
@@ -308,51 +395,29 @@
       return `turnRight(${deg});\n`;
     };
 
-    Blockly.Blocks['switch_backdrop'] = {
-      init: function() {
-        this.appendDummyInput()
-            .appendField("switch backdrop to")
-            .appendField(new Blockly.FieldDropdown([
-              ["Deep Ocean", "ocean"],
-              ["Dark Abyss", "abyss"],
-              ["Grid Mode", "grid"]
-            ]), "BG");
-        this.setPreviousStatement(true); this.setNextStatement(true);
-        this.setColour("#23ffd9");
-      }
-    };
-
-    jsGen.forBlock['switch_backdrop'] = function(block) {
-      return `switchBackdrop("${block.getFieldValue('BG')}");\n`;
-    };
-
-    // 3. Inject Blockly Workspace
+    // 3. Inject Blockly Workspace with Scratch Palette Colors
     const workspace = Blockly.inject('blocklyDiv', {
       toolbox: {
         kind: "categoryToolbox",
         contents: [
           {
-            kind: "category", name: "Motion", colour: "#22c55e",
+            kind: "category", name: "Motion", colour: "#4c97ff",
             contents: [
               { kind: "block", type: "move_steps" },
               { kind: "block", type: "turn_right" }
             ]
           },
           {
-            kind: "category", name: "Looks", colour: "#23ffd9",
-            contents: [{ kind: "block", type: "switch_backdrop" }]
-          },
-          {
-            kind: "category", name: "Operators", colour: "#3b82f6",
+            kind: "category", name: "Operators", colour: "#59c059",
             contents: [{ kind: "block", type: "math_number" }]
           }
         ]
       },
-      grid: { spacing: 20, length: 3, colour: '#142a45', snap: true },
+      grid: { spacing: 20, length: 3, colour: '#e9f0f8', snap: true },
       trashcan: true
     });
 
-    // 4. Execution Logic
+    // 4. Execution API
     function moveSteps(steps) {
       const rad = (state.sprite.rotation * Math.PI) / 180;
       state.sprite.x += Math.cos(rad) * steps;
@@ -365,16 +430,11 @@
       renderStage();
     }
 
-    function switchBackdrop(bg) {
-      state.backdrop = bg;
-      renderStage();
-    }
-
     document.getElementById('runBtn').addEventListener('click', () => {
       const code = jsGen.workspaceToCode(workspace);
       try {
-        const run = new Function('moveSteps', 'turnRight', 'switchBackdrop', code);
-        run(moveSteps, turnRight, switchBackdrop);
+        const run = new Function('moveSteps', 'turnRight', code);
+        run(moveSteps, turnRight);
       } catch (err) {
         console.error(err);
       }
@@ -384,7 +444,6 @@
       state.sprite.x = 240;
       state.sprite.y = 180;
       state.sprite.rotation = 0;
-      state.backdrop = 'ocean';
       renderStage();
     });
   </script>
